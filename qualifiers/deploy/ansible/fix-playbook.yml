@@ -1,0 +1,42 @@
+- name: Setup variables
+  hosts: all
+  tasks:
+    - name: Setup private ips
+      ansible.builtin.set_fact:
+        livectf_database_ip: "{{ hostvars[groups['database'][0]].private_ip }}"
+        livectf_rabbitmq_ip: "{{ hostvars[groups['rabbitmq'][0]].private_ip }}"
+        livectf_web_ip: "{{ hostvars[groups['web'][0]].private_ip }}"
+        livectf_registry_ip: "{{ hostvars[groups['registry'][0]].private_ip }}"
+        livectf_redis_ip: "{{ hostvars[groups['redis'][0]].private_ip }}"
+        livectf_monitor_ip: "{{ hostvars[groups['monitor'][0]].private_ip }}"
+        web_static_ip: "[DELETED]" # TODO (P0): Create new and get this from terraform
+
+- name: Setup web servers
+  hosts: web
+  roles:
+    - role: web
+      vars:
+        database_ip: "{{ livectf_database_ip }}"
+        rabbitmq_ip: "{{ livectf_rabbitmq_ip }}"
+        web_ip: "{{ livectf_web_ip }}"
+        redis_ip: "{{ livectf_redis_ip }}"
+
+#- name: Setup builder server
+#  hosts: builder
+#  roles:
+##    - role: builder-podman
+#    - role: builder-docker
+#      vars:
+#        database_ip: "{{ livectf_database_ip }}"
+#        rabbitmq_ip: "{{ livectf_rabbitmq_ip }}"
+#        registry_ip: "{{ livectf_registry_ip }}"
+
+#- name: Setup runner server
+#  hosts: runner
+#  roles:
+##    - role: runner-podman
+#    - role: runner-docker
+#      vars:
+#        database_ip: "{{ livectf_database_ip }}"
+#        rabbitmq_ip: "{{ livectf_rabbitmq_ip }}"
+#        registry_ip: "{{ livectf_registry_ip }}"

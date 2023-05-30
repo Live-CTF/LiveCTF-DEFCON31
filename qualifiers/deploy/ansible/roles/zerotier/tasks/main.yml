@@ -1,0 +1,163 @@
+- name: Get deb architecture
+  ansible.builtin.command:
+    cmd: 'dpkg --print-architecture'
+  register: deb_architecture
+  changed_when: false
+
+- name: Get OS version
+  ansible.builtin.command:
+    cmd: 'lsb_release -cs'
+  register: os_version_codename
+  changed_when: false
+
+- name: Capture deb architecture
+  ansible.builtin.set_fact:
+    deb_architecture: "{{ deb_architecture.stdout }}"
+    os_version_codename: "{{ os_version_codename.stdout }}"
+    zerotier_api_url: "https://api.zerotier.com/api/v1"
+
+- name: Install ZeroTier pre-dependencies
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - ca-certificates
+
+- name: Create keyrings directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Download ZeroTier GPG key
+  become: true
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/zerotier/ZeroTierOne/master/doc/contact%40zerotier.com.gpg"
+    dest: /etc/apt/keyrings/zerotier.asc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Add ZeroTier repository to sources.list.d
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ deb_architecture }} signed-by=/etc/apt/keyrings/zerotier.asc] https://download.zerotier.com/debian/{{ os_version_codename }} {{ os_version_codename }} main"
+    state: present
+
+- name: Install ZeroTier
+  become: true
+  ansible.builtin.apt:
+    state: present
+    name:
+      - zerotier-one
+
+- name: Create ZeroTier network config directory
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/zerotier-one/networks.d
+    state: directory
+    group: root
+    owner: root
+    mode: '644'
+
+- name: Install ZeroTier network config
+  become: true
+  ansible.builtin.copy:
+    dest: "/var/lib/zerotier-one/networks.d/{{ zerotier_network_id }}.conf"
+    content: ""
+    force: false
+    group: root
+    owner: root
+    mode: '644'
+  register: zerotier_new_config
+
+- name: Restart ZeroTier
+  become: true
+  ansible.builtin.service:
+    name: zerotier-one
+    state: restarted
+  when: zerotier_new_config.changed
+
+- name: Start ZeroTier
+  become: true
+  ansible.builtin.service:
+    name: zerotier-one
+    state: started
+    enabled: true
+
+- name: Get ZeroTier ID
+  ansible.builtin.command:
+    cmd: 'zerotier-cli info'
+  register: zerotier_id
+  changed_when: false
+
+- name: Capture ZeroTier data
+  ansible.builtin.set_fact:
+    zerotier_id: "{{ (zerotier_id.stdout | split)[2] }}"
+
+- name: Wait until network is joined
+  retries: 10
+  register: zerotier_list
+  changed_when: false
+  until: "zerotier_list.stdout_lines | select('search', zerotier_network_id) | list | count != 0"
+  ansible.builtin.command:
+    cmd: "zerotier-cli listnetworks"
+
+- name: Get current ZeroTier config
+  delegate_to: localhost
+  register: network_config
+  changed_when: false
+  ansible.builtin.uri:
+    url: "{{ zerotier_api_url }}/network/{{ zerotier_network_id }}/member/{{ zerotier_id }}"
+    return_content: true
+    headers:
+      Authorization: "Bearer {{ zerotier_api_key }}"
+
+- name: Update config contents
+  delegate_to: localhost
+  register: network_config_updated
+  changed_when: network_config.content != network_config_updated.stdout
+  ansible.builtin.command:
+    stdin: "{{ network_config.content | string }}"
+    cmd: "jq -c --arg name \"{{ ansible_hostname }}\" --arg description \"LiveCTF Infrastructure\" '.config.authorized=true | .name=$name | .description=$description'"
+
+- name: Update ZeroTier config
+  delegate_to: localhost
+  when: network_config_updated.changed
+  ansible.builtin.uri:
+    url: "{{ zerotier_api_url }}/network/{{ zerotier_network_id }}/member/{{ zerotier_id }}"
+    body: "{{ network_config_updated.stdout }}"
+    body_format: json
+    method: post
+    headers:
+      Authorization: "Bearer {{ zerotier_api_key }}"
+
+- name: Wait until network is authed
+  retries: 10
+  register: zerotier_list2
+  changed_when: false
+  until: "zerotier_list2.stdout_lines | select('search', zerotier_network_id) | select('search', 'OK') | list | count != 0"
+  ansible.builtin.command:
+    cmd: "zerotier-cli listnetworks"
+
+- name: Get ZeroTier network ip
+  register: zerotier_ip
+  changed_when: false
+  ansible.builtin.command:
+    cmd: "zerotier-cli get {{ zerotier_network_id }} ip"
+
+- name: Capture ZeroTier network ip
+  ansible.builtin.set_fact:
+    zerotier_ip: "{{ zerotier_ip.stdout }}"
+
+# TODO (P2): How to manage multiple interfaces in a sane way?
+#- name: Make SSHd listen listen on ZeroTier interface
+#  become: true
+#  ansible.builtin.copy:
+#    dest: /etc/ssh/sshd_config.d/listen_zerotier.conf
+#    content: "ListenAddress {{ zerotier_ip }}"
+#  notify: restart sshd

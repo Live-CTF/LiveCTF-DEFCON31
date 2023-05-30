@@ -1,0 +1,16 @@
+- name: Install rsyslog
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - rsyslog
+
+- name: Send logs to monitor server
+  ansible.builtin.template:
+    src: 20-send-logs.conf
+    dest: /etc/rsyslog.d/20-send-logs.conf
+    owner: root
+    group: root
+    mode: '644'
+  notify: restart rsyslog

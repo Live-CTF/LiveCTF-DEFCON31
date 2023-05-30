@@ -1,0 +1,116 @@
+- name: Get deb architecture
+  ansible.builtin.command:
+    cmd: 'dpkg --print-architecture'
+  register: deb_architecture
+  changed_when: false
+
+- name: Get OS version
+  ansible.builtin.command:
+    cmd: 'lsb_release -cs'
+  register: os_version_codename
+  changed_when: false
+
+- name: Capture deb architecture
+  ansible.builtin.set_fact:
+    deb_architecture: "{{ deb_architecture.stdout }}"
+    os_version_codename: "{{ os_version_codename.stdout }}"
+
+- name: Install Google SDK pre-dependencies
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - ca-certificates
+      - apt-transport-https
+
+- name: Create keyrings directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Download Google SDK GPG key
+  become: true
+  ansible.builtin.get_url:
+    url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+    dest: /etc/apt/keyrings/cloud.google.asc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Add Google SDK repository to sources.list.d
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ deb_architecture }} signed-by=/etc/apt/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt cloud-sdk main"
+    state: present
+
+- name: Install gsutil
+  become: true
+  ansible.builtin.apt:
+    state: present
+    name:
+      - google-cloud-cli
+
+- name: Create service account key directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/gcp
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Install GCP service account key
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/gcp/account.json
+    content: "{{ gcp_service_account_key_backup }}"
+    mode: "600"
+    owner: postgres
+    group: postgres
+
+- name: Create database backup script directory
+  become: true
+  ansible.builtin.file:
+    path: /opt/backup/
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Install database backup script
+  become: true
+  ansible.builtin.copy:
+    src: backup-db.sh
+    dest: /opt/backup/backup-db.sh
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Install database backup service
+  become: true
+  ansible.builtin.copy:
+    src: backup-db.service
+    dest: /etc/systemd/system/backup-db.service
+    mode: '644'
+    owner: root
+    group: root
+
+- name: Install database backup timer
+  become: true
+  ansible.builtin.copy:
+    src: backup-db.timer
+    dest: /etc/systemd/system/backup-db.timer
+    mode: '644'
+    owner: root
+    group: root
+
+- name: Enable a timer unit for backup-db
+  ansible.builtin.systemd:
+    name: backup-db.timer
+    state: started
+    enabled: true

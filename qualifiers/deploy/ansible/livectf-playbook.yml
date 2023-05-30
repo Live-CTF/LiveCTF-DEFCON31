@@ -1,0 +1,102 @@
+- name: Setup variables
+  hosts: all
+  tasks:
+    - name: Setup private ips
+      ansible.builtin.set_fact:
+        livectf_database_ip: "{{ hostvars[groups['database'][0]].private_ip }}"
+        livectf_rabbitmq_ip: "{{ hostvars[groups['rabbitmq'][0]].private_ip }}"
+        livectf_web_ip: "{{ hostvars[groups['web'][0]].private_ip }}"
+        livectf_registry_ip: "{{ hostvars[groups['registry'][0]].private_ip }}"
+        livectf_redis_ip: "{{ hostvars[groups['redis'][0]].private_ip }}"
+        livectf_monitor_ip: "{{ hostvars[groups['monitor'][0]].private_ip }}"
+        web_static_ip: "[DELETED]" # TODO (P0): Create new and get this from terraform
+
+# TODO (P2): Think about how to do this in a sane way with terraform, zerotier ip, etc.
+#- name: Setup SSH to only listen in private network
+#  hosts:
+#    - internal
+#  roles:
+#    - internal
+
+- name: Mount volumes
+  hosts:
+    - builder
+    - runner
+  roles:
+    - mountvolumes
+
+- name: Basic setup
+  hosts: all
+  roles:
+    - role: serversetup
+    - role: zerotier
+    - role: rsyslog
+      vars:
+        syslog_server: "{{ livectf_monitor_ip }}"
+    - role: podman
+    - role: docker
+      vars:
+        registry_ip: "{{ livectf_registry_ip }}"
+
+- name: Setup redis server
+  hosts: redis
+  roles:
+    - role: redis
+      vars:
+        redis_ip: "{{ livectf_redis_ip }}"
+
+- name: Setup rabbitmq server
+  hosts: rabbitmq
+  roles:
+    - role: rabbitmq
+
+- name: Setup database server
+  hosts: database
+  roles:
+    - role: postgres
+    - role: pg-gcs-backup
+
+- name: Setup docker registry server
+  hosts: registry
+  roles:
+    - role: registry
+
+- name: Setup web servers
+  hosts: web
+  roles:
+    - role: static-ip
+      vars:
+        floating_ip: "{{ web_static_ip }}"
+    - role: nginx
+    - role: web
+      vars:
+        database_ip: "{{ livectf_database_ip }}"
+        rabbitmq_ip: "{{ livectf_rabbitmq_ip }}"
+        web_ip: "{{ livectf_web_ip }}"
+        redis_ip: "{{ livectf_redis_ip }}"
+    - role: score-reporter
+
+- name: Setup builder server
+  hosts: builder
+  roles:
+#    - role: builder-podman
+    - role: builder-docker
+      vars:
+        database_ip: "{{ livectf_database_ip }}"
+        rabbitmq_ip: "{{ livectf_rabbitmq_ip }}"
+        registry_ip: "{{ livectf_registry_ip }}"
+
+- name: Setup runner server
+  hosts: runner
+  roles:
+#    - role: runner-podman
+    - role: runner-docker
+      vars:
+        database_ip: "{{ livectf_database_ip }}"
+        rabbitmq_ip: "{{ livectf_rabbitmq_ip }}"
+        registry_ip: "{{ livectf_registry_ip }}"
+
+- name: Setup monitor server
+  hosts: monitor
+  roles:
+    - role: graylog

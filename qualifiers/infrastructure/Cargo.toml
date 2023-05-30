@@ -1,0 +1,10 @@
+[workspace]
+
+members = [
+    "common",
+    "challenge-api",
+    "exploit-builder",
+    "exploit-runner",
+    "dashboard",
+    "score-reporter",
+]

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>LiveCTF at DEF CON 31 CTF Qualifiers</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+
+  <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+  <!-- from: https://github.com/dk8996/Gantt-Chart -->
+  <script type="text/javascript" src="js/gantt-chart-d3.js"></script>
+
+  <script>
+    var tasks = [
+      {"startDate": new Date("Sat May 27 12:00:00 UTC 2023"), "endDate": new Date("Sat May 27 12:30:00 UTC 2023"), "taskName": "Stream", "status": "A"},
+      {"startDate": new Date("Sat May 27 16:00:00 UTC 2023"), "endDate": new Date("Sat May 27 16:30:00 UTC 2023"), "taskName": "Stream", "status": "B"},
+      {"startDate": new Date("Sat May 27 20:00:00 UTC 2023"), "endDate": new Date("Sat May 27 20:30:00 UTC 2023"), "taskName": "Stream", "status": "A"},
+      {"startDate": new Date("Sat May 28 00:00:00 UTC 2023"), "endDate": new Date("Sun May 28 00:30:00 UTC 2023"), "taskName": "Stream", "status": "B"},
+      {"startDate": new Date("Sun May 28 04:00:00 UTC 2023"), "endDate": new Date("Sun May 28 04:30:00 UTC 2023"), "taskName": "Stream", "status": "A"},
+      {"startDate": new Date("Sun May 28 08:00:00 UTC 2023"), "endDate": new Date("Sun May 28 08:30:00 UTC 2023"), "taskName": "Stream", "status": "B"},
+      {"startDate": new Date("Sun May 28 12:00:00 UTC 2023"), "endDate": new Date("Sun May 28 12:30:00 UTC 2023"), "taskName": "Stream", "status": "A"},
+
+      {"startDate": new Date("Sat May 27 12:00:00 UTC 2023"), "endDate": new Date("Sat May 27 16:00:00 UTC 2023"), "taskName": "Challenges", "status": "B"},
+      {"startDate": new Date("Sat May 27 16:00:00 UTC 2023"), "endDate": new Date("Sat May 27 20:00:00 UTC 2023"), "taskName": "Challenges", "status": "A"},
+      {"startDate": new Date("Sat May 27 20:00:00 UTC 2023"), "endDate": new Date("Sun May 28 00:00:00 UTC 2023"), "taskName": "Challenges", "status": "B"},
+      {"startDate": new Date("Sun May 28 00:00:00 UTC 2023"), "endDate": new Date("Sun May 28 04:00:00 UTC 2023"), "taskName": "Challenges", "status": "A"},
+      {"startDate": new Date("Sun May 28 04:00:00 UTC 2023"), "endDate": new Date("Sun May 28 08:00:00 UTC 2023"), "taskName": "Challenges", "status": "B"},
+      {"startDate": new Date("Sun May 28 08:00:00 UTC 2023"), "endDate": new Date("Sun May 28 12:00:00 UTC 2023"), "taskName": "Challenges", "status": "A"},
+
+      {"startDate": new Date("Sat May 27 00:00:00 UTC 2023"), "endDate": new Date("Sun May 28 12:00:00 UTC 2023"), "taskName": "Test Challenge", "status": "A"},
+    ];
+
+    var taskStatus = {
+      "A": "bar-a",
+      "B": "bar-b",
+    };
+
+    var taskNames = ["Stream", "Challenges", "Test Challenge"];
+
+    tasks.sort(function (a, b) {
+      return a.endDate - b.endDate;
+    });
+    //var maxDate = tasks[tasks.length - 1].endDate;
+    tasks.sort(function (a, b) {
+      return a.startDate - b.startDate;
+    });
+    //var minDate = tasks[0].startDate;
+
+    var format = "%H:%M";
+
+
+  </script>
+</head>
+
+<body>
+  <div id="main" role="main">
+    <div id="banner">
+      <div id="banner-img"></div>
+    </div>
+    <div id="content">
+      <h2>
+        <a href="submit.html">Submit Exploits Here</a>
+      </h2>
+      <p>
+        Welcome to the DEF CON 31 CTF Qualifiers LiveCTF challenges! Throughout the event, six challenges will be
+        released which you have to solve as fast as possible. This page describes the rules and the technical
+        details for these LiveCTF challenges.
+      </p>
+      <h2>Overview</h2>
+      <p>
+        Starting 12 hours into the event, i.e. 12:00 UTC, the first LiveCTF challenge will be released. You will solve
+        the
+        challenge by downloading the materials, developing a solve script, testing it, and then uploading it to our
+        servers. There, we will run it against the challenge to validate the solution.
+        Scores will be based on how fast your team can submit a working solution relative to the first team to solve
+        the challenge.
+        Each challenge is worth a maximum of 50 points. After four hours, the challenge closes completely.
+        This goes on for six challenges, i.e. 24 hours in total and 300 points maximum.
+      </p>
+      <h2>Challenge Goal</h2>
+      <p>
+        Unless otherwise specified, the goal of each challenge is to execute "./submitter" which will print the flag.
+        Your solution should then output the flag to stdout.
+      </p>
+      <h2>LiveCTF Stream</h2>
+      <p>
+        Before each challenge is released we will start a stream on our
+        <a href="https://www.youtube.com/channel/UCV1C4YZ8JkoRtjywbW6z0fA">LiveCTF YouTube channel</a>.
+        During this stream, we will close the current challenge, release the new challenge and then talk through the
+        solutions to the challenge we just closed. This will include explaining the idea of the challenge and showcasing
+        solutions from the teams as well as an update on solves and scores.
+      </p>
+      <h2>Scoring</h2>
+      <p>
+        At the start, each challenge is worth 50 points. The first team to solve the challenge will be awarded these
+        points. From that moment, the challenge starts to drop in value by 1 point every 6 minutes. It is important to
+        note that it is the submission time of the solution that counts, not when the evaluation pipeline actually
+        validates the solution.
+      </p>
+      <p>
+        This means that even if our pipeline is slow or a technical error occurs which requires
+        re-evaluation, this will not negatively affect your score. This also means that there will be a slight delay
+        from your solution being marked as correct until points are awarded in the specific case where you are the first
+        solver but there are still unfinished evaluations in the queue submitted before your solution.
+      </p>
+      <h2>Rules</h2>
+      <ul>
+        <li>Do not attack the infrastructure itself</li>
+        <li>Do not deliberately use a large amount of resources</li>
+        <li>Do not hinder the other teams' ability to solve the challenges</li>
+        <li>Admins' decisions are final</li>
+      </ul>
+      <h2>Schedule</h2>
+      <div id="chart"></div>
+      <p>
+        There is a test challenge open from the start of the event which you can use to try out the process of solving a
+        challenge and uploading a solution. Starting at May 27 12:00 UTC, one challenge at a time will
+        be open, for four hours each. The live stream will begin a few minutes prior to the challenge switching and
+        continue through the opening of each new challenge.
+      </p>
+      <h2>Technical Details</h2>
+      <p>
+          Solving a challenge will require you to upload a <code>.tar.gz</code> archive containing a Dockerfile and any other required
+        materials. This archive may be at most 10MB compressed and 50MB when unpacked. To make a submission, you
+        will need a challenge token that you may get from the main DEF CON CTF Qualifiers scoreboard. When you upload
+        your solution, you will get back a submission id which can be used to check the status of your submission. The
+        submission will be used to build a docker image. During the build, the container has internet access (i.e. for
+        installing packages). This image will then be used to launch a container in a network
+        without internet access, along with a container running the challenge. The challenge container will contain a
+        randomly generated flag. If your solution container outputs this flag to stdout, it is a valid solution.
+      </p>
+      <p>
+          Do not submit additional submissions if one is still processing! Subsequent submissions will cancel prior pending
+          submissions and lose your original submission time.
+      </p>
+      <p>
+
+        We will provide reasonable resource limits on containers both in the build phase and the run phase, but
+        excessive use of resources may lead to your attempt being rejected. While building your solution, you are
+        allowed 2GB of RAM, 20GB of disk space, one CPU core, and 2 minutes of wall-clock time. While running the
+        challenge, you are allowed 2GB of RAM, 10GB of disk space, and 1 minute of wall-clock time. Attempts to abuse
+        the infrastructure may disqualify your team from future submission attempts.
+
+      </p>
+      <p>
+        To test the whole process and make sure you are prepared when the first challenge is released, we are providing
+        a test challenge. You can download the materials for this test challenge in the same way as the other challenges
+        using the api and use it to write a solution, test it locally and upload it to the server.
+      </p>
+      <h2>LiveCTF Exploit Base Image</h2>
+      <p>
+        Since many teams write their exploits using Python and <a href="https://pwntools.com">Pwntools</a>, we have
+        prepared a
+        <a
+          href="https://hub.docker.com/layers/livectf/livectf/quals-exploit/images/sha256-b5ed977c0f03870548fad32f7351fef1e2c51d0c19f2fc3de7ea9c0f34061958">base
+          image</a>
+        with the latest version of Pwntools pre-installed. If you base your exploit on this image, the building of your
+        image should be very fast.
+        Of course you are also allowed to use whatever base image you prefer but keep in mind that long installations
+        might time out the build process.
+      </p>
+      <h2>API Specification</h2>
+      <p>
+        The base URL for all the endpoints below is https://play.livectf.com. Every request needs to contain a
+        header named "X-LiveCTF-Token" with the value set to the challenge specific token you get from the DEFCON CTF
+        quals scoreboard. For the endpoints related to a challenge, the challenge specific token needs to match the
+        challenge. For the other endpoints, any valid token is acceptable.
+      </p>
+      <p>
+        <a href="api.html">See the specification here</a>
+      </p>
+      <h2>Example</h2>
+      <p>Below is a full example of how to build and submit a solution for the test challenge. You can also use the
+        helper script provided in the materials.</p>
+      <pre>
+        <code>
+$ echo &lt;&lt;&lt;EOF &gt; Dockerfile
+FROM livectf/livectf:quals-exploit
+COPY solve.py /
+WORKDIR /
+CMD ["python3", "solve.py"]
+EOF
+
+$ echo &lt;&lt;&lt;EOF &gt; solve.py
+from pwn import *
+HOST = os.environ.get('HOST', 'localhost')
+PORT = 31337
+r = remote(HOST, int(PORT))
+r.recvline_contains(b'Give me input: ')
+r.sendline(b'WIN')
+r.recvline_contains(b'You sent: ')
+r.sendline(b'./submitter')
+flag = r.recvline_contains(b'LiveCTF{').decode().strip()
+log.info('Flag: %s', flag)
+EOF
+
+$ tar czf solution.tar.gz Dockerfile solve.py
+$ curl https://play.livectf.com/api/challenges/7 -F exploit=@solution.tar.gz -H "X-LiveCTF-Token: ticket{...}"
+{"exploit_id": "FOO", ...}
+
+$ curl https://play.livectf.com/api/exploits/FOO -H "X-LiveCTF-Token: ticket{...}"
+{"exploit_id": "FOO", ..., "status": "Building"}
+
+$ sleep 60
+$ curl https://play.livectf.com/api/exploits/FOO -H "X-LiveCTF-Token: ticket{...}"
+{"exploit_id": "FOO", ..., "status": "RunSolved"}
+</code>
+</pre>
+
+      <h2>Licensing</h2>
+      <p>
+        By submitting a solution to a challenge you agree to license the materials you submit under an Apache 2.0
+        license with attribution to your team.
+      </p>
+      <script>
+        var gantt = d3.gantt()
+          .taskTypes(taskNames)
+          .taskStatus(taskStatus)
+          .tickFormat(format)
+          .selector('#chart')
+          .timeDomainMode(d3.gantt.FIXED_TIME_DOMAIN_MODE)
+          .timeDomain([
+            new Date("Sat May 27 00:00:00 UTC 2023"),
+            new Date("Sun May 28 16:00:00 UTC 2023")
+          ])
+          .width(800)
+          .height(200);
+
+        gantt(tasks);
+      </script>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,12 @@
+- name: Install floating ip config
+  become: true
+  ansible.builtin.template:
+    src: 60-floating-ip.cfg.j2
+    dest: /etc/netplan/60-floating-ip.yaml
+  register: static_ip_config
+
+- name: Apply netplan
+  become: true
+  ansible.builtin.command:
+    cmd: "netplan apply"
+  when: static_ip_config.changed

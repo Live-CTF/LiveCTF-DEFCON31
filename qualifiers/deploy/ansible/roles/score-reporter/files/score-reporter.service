@@ -1,0 +1,11 @@
+[Unit]
+Description=Service to report scores to Nautilus and update the database
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/opt/livectf
+ExecStart=/opt/livectf/score-reporter
+
+[Install]
+WantedBy=multi-user.target

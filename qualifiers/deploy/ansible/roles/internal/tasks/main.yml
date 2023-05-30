@@ -1,0 +1,6 @@
+- name: Make SSHd listen only on private interface
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/listen_private.conf
+    content: "ListenAddress {{ private_ip }}"
+  notify: restart sshd

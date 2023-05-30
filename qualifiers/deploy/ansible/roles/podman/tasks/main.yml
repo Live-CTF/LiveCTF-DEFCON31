@@ -1,0 +1,15 @@
+- name: Install podman
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - slirp4netns
+      - fuse-overlayfs
+      - podman
+
+- name: Configure LiveCTF registry
+  become: true
+  ansible.builtin.copy:
+    src: livectf.conf
+    dest: /etc/containers/registries.conf.d/livectf.conf

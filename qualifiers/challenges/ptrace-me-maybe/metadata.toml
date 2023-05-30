@@ -1,0 +1,31 @@
+challenge_id = "ptrace-me-maybe"
+
+challenge_name = "ptrace Me Maybe"
+
+challenge_description = '''
+Arbitrary syscalls was too powerful, and cseagle solved last year's challenge without even needing a script.
+This year, you only get one syscall, and you'll probably need a script.
+'''
+
+challenge_spoilers = '''
+Send arbitrary ptrace commands to your child process to puppeteer it into running the
+flag submitter for you!
+
+General outline as follows:
+1. Get register state with PTRACE_PEEKUSER. The "user" refers to a structure that has all
+   the register state for use by gdb (thanks, gdb!)
+2. Write shellcode into rip with PTRACE_POKETEXT
+3. Detach from the child. This is important! suid won't work if you are being ptraced.
+
+There is an unintended solution path as well:
+
+PTRACE_GETREGS will copy register data into the pointer specified by the parent,
+whose value the user controls. Players may use this to instead overwrite memory
+in the parent process and write a payload there instead. A general strategy for that is:
+1. Read rsp and rip in child to determine ASLR offset in parent (thanks, fork!)
+2. Point ptrace data result at parent's stack pointer
+3. Assemble a ROP payload with the registers in the child
+4. Use PTRACE_READREGS to read child register state into data result pointer,
+   clobbering parent's stack with r15, r14, etc from the child
+5. Continue the parent, which will execute the ROP payload after exiting main
+'''

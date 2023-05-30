@@ -1,0 +1,22 @@
+admin_api_key: "[REDACTED]" # TODO (P0): Create new key
+amqp_password: "[REDACTED]" # TODO (P0): Create new password
+amqp_username: "livectf"
+api_host: "0.0.0.0"
+api_port: "80"
+auth_server_key: "[REDACTED]" # TODO (P0): Create new key
+auth_server_url: "[REDACTED]" # TODO (P0): Add new URL
+build_path: "/tmp/builds"
+challenge_registry_username: "livectf"
+challenge_registry_password: "[REDACTED]" # TODO (P0): Create new password
+database_db: "livectf"
+database_password: "[REDACTED]" # TODO (P0): Create new password
+database_username: "livectf"
+exploits_path: "livectf-exploits" # GCP Bucket name
+exploits_storage: "gcp"
+gcp_service_account_key_backup: '[REVOKED & REDACTED]' # TODO (P0): Create new key
+gcp_service_account_key_challenge: '[REVOKED & REDACTED]' # TODO (P0): Create new key
+gcp_service_account_key_reader: '[REVOKED & REDACTED]' # TODO (P0): Create new key
+gcp_service_account_key_writer: '[REVOKED & REDACTED]' # TODO (P0): Create new key
+graylog_root_password: "[REDACTED]" # TODO (P0): Create new password
+graylog_secret: "[REDACTED]" # TODO (P0): Create new secret
+hmac_key: "[UNUSED]" # TODO (P0): Remove usage from code base

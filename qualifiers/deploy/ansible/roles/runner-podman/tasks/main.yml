@@ -1,0 +1,58 @@
+- name: Create LiveCTF user
+  become: true
+  ansible.builtin.user:
+    name: livectf
+    comment: LiveCTF
+    create_home: true
+    home: /opt/livectf
+    system: true
+    state: present
+
+- name: Set subuids
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/subuid 
+    regex: "^livectf"
+    line: "livectf:100000:65536"
+    create: true
+    mode: '644'
+    owner: root
+    group: root
+
+- name: Set subgids
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/subgid 
+    regex: "^livectf"
+    line: "livectf:100000:65536"
+    create: true
+    mode: '644'
+    owner: root
+    group: root
+
+- name: Pull the LiveCTF runner image
+  become: true
+  become_user: livectf
+  containers.podman.podman_image:
+    name: localhost:5001/livectf-runner
+    state: present
+    validate_certs: false
+    force: "{{ upgrade_runner | default(false) | bool }}"
+
+- name: Start LiveCTF runner container
+  become: true
+  become_user: livectf
+  containers.podman.podman_container:
+    name: livectf-runner
+    image: localhost:5001/livectf-runner
+    recreate: "{{ upgrade_runner | default(false) | bool }}"
+    state: started
+    user: podman
+    privileged: true
+    env:
+      AMQP_ADDR: "amqp://{{ amqp_username }}:{{ amqp_password }}@{{ rabbitmq_ip }}//"
+      DATABASE_URL: "postgres://{{ database_username }}:{{ database_password }}@{{ database_ip }}/{{ database_db }}"
+      DOCKER_REPO: "{{ registry_ip }}:5000/"
+      RUST_LOG: info
+      DOCKER_DISK_LIMIT: "1"
+      CONTAINER_RUNNER: "podman"

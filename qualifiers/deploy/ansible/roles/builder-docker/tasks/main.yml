@@ -1,0 +1,29 @@
+- name: Pull the LiveCTF builder image
+  community.docker.docker_image:
+    name: localhost:5001/livectf-builder
+    source: pull
+    force_source: "{{ upgrade_builder | default(false) | bool }}"
+
+- name: Create a volume for sharing credentials
+  community.docker.docker_volume:
+    name: livectf_credentials
+
+- name: Start LiveCTF builder container
+  community.docker.docker_container:
+    name: livectf-builder
+    image: localhost:5001/livectf-builder
+    state: started
+    env:
+      BUILD_PATH: "{{ build_path }}"
+      EXPLOITS_PATH: "{{ exploits_path }}"
+      EXPLOITS_STORAGE: "{{ exploits_storage }}"
+      AMQP_ADDR: "amqp://{{ amqp_username }}:{{ amqp_password }}@{{ rabbitmq_ip }}//"
+      DATABASE_URL: "postgres://{{ database_username }}:{{ database_password }}@{{ database_ip }}/{{ database_db }}"
+      EXPLOIT_DOCKER_REPO: "{{ registry_ip }}:5000/"
+      GOOGLE_SERVICE_ACCOUNT_KEY: "{{ gcp_service_account_key_reader | string }}"
+      RUST_LOG: info
+      #DISK_LIMIT_AVAILABLE: "1"
+      CONTAINER_RUNNER: "docker"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - livectf_credentials:/credentials

@@ -1,0 +1,13 @@
+challenge_id = "benshmark"
+
+challenge_name = "Benshmark"
+
+challenge_description = '''
+Read the flag at /flag
+'''
+
+challenge_spoilers = '''
+TODO (P0): explain the challenge
+here for the commentators
+so that they can talk about it
+'''

@@ -1,0 +1,72 @@
+- name: Get deb architecture
+  ansible.builtin.command:
+    cmd: 'dpkg --print-architecture'
+  register: deb_architecture
+  changed_when: false
+
+- name: Get OS version
+  ansible.builtin.command:
+    cmd: 'lsb_release -cs'
+  register: os_version_codename
+  changed_when: false
+
+- name: Capture deb architecture
+  ansible.builtin.set_fact:
+    deb_architecture: "{{ deb_architecture.stdout }}"
+    os_version_codename: "{{ os_version_codename.stdout }}"
+    docker_repo_url: "https://download.docker.com/linux/ubuntu"
+
+- name: Install redis pre-dependencies
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - ca-certificates
+
+- name: Create keyrings directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Download redis GPG key
+  become: true
+  ansible.builtin.get_url:
+    url: "https://packages.redis.io/gpg"
+    dest: /etc/apt/keyrings/redis-archive-keyring.asc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Add redis repository to sources.list.d
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/redis-archive-keyring.asc] https://packages.redis.io/deb {{ os_version_codename }} main"
+    state: present
+
+- name: Install redis
+  become: true
+  ansible.builtin.apt:
+    state: present
+    name:
+      - redis
+
+- name: Set redis to listen to private network
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regex: "^bind"
+    line: "bind 127.0.0.1 -::1 {{ redis_ip }}"
+  notify: restart redis
+
+- name: Disable redis protected mode
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regex: "^protected-mode"
+    line: "protected-mode no"
+  notify: restart redis

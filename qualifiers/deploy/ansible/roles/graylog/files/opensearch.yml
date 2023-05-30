@@ -1,0 +1,7 @@
+cluster.name: graylog
+node.name: ${HOSTNAME}
+path.data: /var/lib/opensearch
+path.logs: /var/log/opensearch
+network.host: ${HOSTNAME}
+action.auto_create_index: false
+plugins.security.disabled: true

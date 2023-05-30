@@ -1,0 +1,15 @@
+challenge_id = "what-a-maze-meant"
+
+challenge_name = "What A Maze Meant"
+
+challenge_description = '''
+It's the day of the High Sun Games and you and your intrepid band of thieves are just trying to make it out alive.
+''''
+
+challenge_spoilers = '''
+Hint: What does a farmer require? Make sure you're tracking and verifying your seed.
+
+Two parts to the challenge. First, a basic maze solver (though this can be done
+with very simply follow the wall logic), and second, you need to predict,
+verify, and track the random seed to ensure you exit alive.
+''

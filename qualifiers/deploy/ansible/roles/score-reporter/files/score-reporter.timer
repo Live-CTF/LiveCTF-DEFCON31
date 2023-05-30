@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer to run score-reporter.service
+
+[Timer]
+Unit=score-reporter.service
+OnCalendar=*:0/1
+
+[Install]
+WantedBy=timers.target

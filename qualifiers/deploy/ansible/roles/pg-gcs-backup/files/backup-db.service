@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup Postgres database and upload to GCS
+
+[Service]
+User=postgres
+Group=postgres
+ExecStart=/opt/backup/backup-db.sh
+
+[Install]
+WantedBy=multi-user.target

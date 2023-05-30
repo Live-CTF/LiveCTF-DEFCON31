@@ -1,0 +1,16 @@
+server {
+	listen 80;
+	listen [::]:80;
+
+	server_name play.livectf.com;
+	
+	location / {
+        {% if ctf_started is not defined %}
+		auth_basic "CTF not started";
+        auth_basic_user_file /etc/nginx/htpasswd.conf;
+        {% endif %}
+
+		include proxy_params;
+		proxy_pass http://localhost:8000/;
+	}
+}

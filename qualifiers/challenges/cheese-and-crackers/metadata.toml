@@ -1,0 +1,20 @@
+challenge_id = "cheese-and-crackers"
+
+challenge_name = "Cheese and Crackers"
+
+challenge_description = '''
+A new state-of-the-art obfuscation framework just dropped.
+Can you write a tool to automatically defeat it?
+'''
+
+challenge_spoilers = '''
+The challenge uses Zig compile time features to obfuscate a very simple crackme.
+The crackme itself simply checks the input one character at a time and aborts early if there is a mismatch.
+The obfuscation encrypts the whole code, which is then decrypted at run-time and called.
+Solving it statically can be quite a challenge due to Zig's code generation.
+With a dynamic approach you can set a breakpoint at a "call [reg]" instruction towards the end of the code which calls the checker.
+Once the checker is found, it is fairly easy to extract the instructions from memory and parse them to get the password.
+This can be automated with your favourite binary instrumentation framework or gdb.
+A cheese solution is to use instruction counting to solve the challenge.
+After solving 20 samples, the player will get the flag.
+'''

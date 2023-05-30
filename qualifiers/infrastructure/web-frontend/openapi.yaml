@@ -1,0 +1,278 @@
+openapi: 3.0.3
+info:
+  title: DEF CON 31 LiveCTF API
+  description: 'API docs for LiveCTF 2023'
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: '1'
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://play.livectf.com/api/
+tags:
+  - name: api
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+paths:
+  /challenges:
+    get:
+      tags:
+        - api
+      summary: Get currently available challenges
+      description: ''
+      operationId: getChallengeList
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Challenge'
+        '4XX':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /challenges/{challengeId}:
+    get:
+      tags:
+        - api
+      summary: Get information about a challenge
+      description: ''
+      operationId: getChallenge
+      parameters:
+        - name: challengeId
+          in: path
+          description: ID of challenge
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+        '4XX':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - api
+      summary: Submit an exploit
+      description: ''
+      operationId: createExploit
+      security:
+        - api_token: []
+      parameters:
+        - name: challengeId
+          in: path
+          description: ID of challenge
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                exploit:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Created submission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exploit'
+        '4XX':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /challenges/{challengeId}/download:
+    get:
+      tags:
+        - api
+      summary: Download a challenge
+      description: ''
+      operationId: downloadChallenge
+      parameters:
+        - name: challengeId
+          in: path
+          description: ID of challenge
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '302':
+          description: 'Redirect to file download'
+        '4XX':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /challenges/{challengeId}/scores:
+    get:
+      tags:
+        - api
+      summary: Get the current score status for a challenge
+      description: ''
+      operationId: getChallengeScores
+      parameters:
+        - name: challengeId
+          in: path
+          description: ID of challenge
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeScore'
+        '4XX':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /exploits/{exploitId}:
+    get:
+      tags:
+        - api
+      summary: Get information about a submitted exploit
+      description: ''
+      operationId: getExploit
+      security:
+        - api_token: []
+      parameters:
+        - name: exploitId
+          in: path
+          description: ID of exploit
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exploit'
+        '4XX':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Challenge:
+      type: object
+      properties:
+        challenge_id:
+          type: integer
+          format: int64
+          example: 1
+        challenge_short_name:
+          type: string
+          example: "test-challenge"
+        challenge_name:
+          type: string
+          example: "Test Challenge"
+        releases_at:
+          type: string
+          format: date-time
+        closes_at:
+          type: string
+          format: date-time
+    ChallengeScore:
+      type: object
+      properties:
+        challenge_id:
+          type: integer
+          format: int64
+          example: 1
+        current_score:
+          type: integer
+          example: 50
+        solves:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChallengeSolve'
+
+    ChallengeSolve:
+      type: object
+      properties:
+        team_id:
+          type: integer
+          format: int64
+          example: 1
+        submission_time:
+          type: string
+          format: date-time
+        score_awarded:
+          type: integer
+          example: 50
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+    Exploit:
+      type: object
+      properties:
+        exploit_id:
+          type: string
+          format: uuid
+        team_id:
+          type: integer
+          example: 1234
+        challenge_id:
+          type: integer
+          example: 3
+        pending:
+          type: boolean
+        status:
+          type: string
+          enum: [Submitted,Building,BuildOk,BuildFailed,Cancelled,Running,RunSolved,RunFailed]
+        score_awarded:
+          type: integer
+          nullable: true
+        submission_time:
+          type: string
+          format: date-time
+        run_duration:
+          type: integer
+          nullable: true
+
+  securitySchemes:
+    api_token:
+      type: apiKey
+      name: X-LiveCTF-Token
+      in: header

@@ -1,0 +1,85 @@
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #301934;
+
+    font-family: "Open Sans", sans-serif;
+}
+
+a {
+    color: whitesmoke;
+}
+
+a:visited {
+    color: gray;
+}
+
+a:hover {
+    color: white;
+}
+
+a:active {
+    color: whitesmoke;
+}
+
+#main {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1280px;
+}
+
+#banner {
+    width: 100%;
+}
+
+#banner-img {
+    background-image: url("img/logo.png");
+    background-position: center;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 30%;
+    width: 100%;
+    overflow: auto;
+}
+
+#content {
+    padding: 10px 5%;
+    border: 8px solid purple;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    color: whitesmoke;
+}
+
+#chart {
+    width: 100%;
+}
+
+#chart svg {
+    width: 100%;
+}
+
+.chart {
+    /*stroke: #f5f5f5;*/
+    fill: #fff;
+}
+ 
+.axis path, .axis line {
+	fill: none;
+	stroke: #f5f5f5;
+	shape-rendering: crispEdges;
+}
+
+.bar-b {
+	fill: rgb(100, 0, 100);
+}
+ 
+.bar-a {
+	fill: rgb(180, 0, 180);
+}

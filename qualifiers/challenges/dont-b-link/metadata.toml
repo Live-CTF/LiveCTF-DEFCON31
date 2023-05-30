@@ -1,0 +1,24 @@
+challenge_id = "dont-b-link"
+
+challenge_name = "Don't bLink"
+
+challenge_description = '''
+Compiler challenges are so passé. Now we have linker challenges!
+Don't bLink! This one is probably going fast...
+'''
+
+challenge_spoilers = '''
+It's literally just an arbitrary linker script challenge. You can tell LD where to put
+the sections, and what to put in them. Apart from getting around the unwieldy syntax, the
+solution steps (at least in the reference solution) are pretty straight forward:
+
+- Make sure it generates a valid ELF (does this by default)
+- Fill the TEXT segment with your shellcode
+- Set the entry point to the start of your shellcode
+- Make LD happy (impossible) (2023) (gone wild) (outdated meme)
+
+I expect some team to basically have a solution for this pre-planned. I expect the first
+solves to come in probably 10 minutes after opening (after they figure out how to interact).
+It's not that outlandish of a concept and it wouldn't take that long to implement-- hell,
+I was able to write _and_ solve it in less time than teams will have just to solve it.
+'''

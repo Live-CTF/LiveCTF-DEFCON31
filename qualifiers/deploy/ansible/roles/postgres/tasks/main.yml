@@ -1,0 +1,111 @@
+- name: Install PostgreSQL server and dependencies
+  ansible.builtin.apt:
+    name:
+      - postgresql
+      - python3
+      - python3-pip
+    cache_valid_time: 3600
+    state: present
+
+- name: "Install Python packages"
+  ansible.builtin.pip: 
+    name: psycopg2-binary
+    state: present
+
+- name: "Create livectf database"
+  community.postgresql.postgresql_db:
+    state: present
+    name: "{{ database_db }}"
+  become: yes
+  become_user: postgres
+
+- name: "Create db user"
+  community.postgresql.postgresql_user:
+    state: present
+    name: "{{ database_username }}"
+    password: "{{ database_password }}"
+  become: yes
+  become_user: postgres
+
+- name: "Grant db user access to app db"
+  community.postgresql.postgresql_privs:
+    type: database
+    database: "{{ database_db }}"
+    roles: "{{ database_username }}"
+    grant_option: no
+    privs: all
+  become: yes
+  become_user: postgres
+
+- name: "Allow listening on the private subnet"
+  community.postgresql.postgresql_set:
+    name: listen_addresses
+    value: "localhost, {{ private_ip }}"
+  become: yes
+  become_user: postgres
+  notify: restart postgres
+
+- name: "Allow md5 connection for the db user from private network"
+  community.postgresql.postgresql_pg_hba:
+    dest: "/etc/postgresql/14/main/pg_hba.conf"
+    contype: host
+    databases: all
+    address: "{{ subnet }}"
+    method: md5
+    users: "{{ database_username }}"
+    create: true
+  become: yes
+  become_user: postgres
+  notify: restart postgres
+
+- name: "Allow md5 connection for the db user from docker network 1"
+  community.postgresql.postgresql_pg_hba:
+    dest: "/etc/postgresql/14/main/pg_hba.conf"
+    contype: host
+    databases: all
+    address: "172.17.0.0/16"
+    method: md5
+    users: "{{ database_username }}"
+    create: true
+  become: yes
+  become_user: postgres
+  notify: restart postgres
+
+- name: "Allow md5 connection for the db user from docker network 2"
+  community.postgresql.postgresql_pg_hba:
+    dest: "/etc/postgresql/14/main/pg_hba.conf"
+    contype: host
+    databases: all
+    address: "172.18.0.0/15"
+    method: md5
+    users: "{{ database_username }}"
+    create: true
+  become: yes
+  become_user: postgres
+  notify: restart postgres
+
+- name: "Allow md5 connection for the db user from docker network 3"
+  community.postgresql.postgresql_pg_hba:
+    dest: "/etc/postgresql/14/main/pg_hba.conf"
+    contype: host
+    databases: all
+    address: "172.20.0.0/14"
+    method: md5
+    users: "{{ database_username }}"
+    create: true
+  become: yes
+  become_user: postgres
+  notify: restart postgres
+
+- name: "Allow md5 connection for the db user from docker network 4"
+  community.postgresql.postgresql_pg_hba:
+    dest: "/etc/postgresql/14/main/pg_hba.conf"
+    contype: host
+    databases: all
+    address: "172.24.0.0/13"
+    method: md5
+    users: "{{ database_username }}"
+    create: true
+  become: yes
+  become_user: postgres
+  notify: restart postgres

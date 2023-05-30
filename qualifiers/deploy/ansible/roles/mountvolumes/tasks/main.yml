@@ -1,0 +1,17 @@
+- name: Make sure mount point exists
+  ansible.builtin.file:
+    path: /var/lib/docker
+    state: directory
+    owner: root
+    group: root
+    mode: '710'
+
+- name: Mount up XFS volumes
+  ansible.posix.mount:
+    path: /var/lib/docker
+    src: "/dev/disk/by-id/scsi-0HC_Volume_{{ volume_id }}"
+    fstype: xfs
+    opts: "defaults,quota,prjquota,pquota,gquota"
+    passno: "0"
+    dump: "0"
+    state: mounted

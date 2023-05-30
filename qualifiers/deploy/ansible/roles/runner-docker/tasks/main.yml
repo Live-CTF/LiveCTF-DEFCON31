@@ -1,0 +1,28 @@
+# TODO (P2): Setup TLS in the future to use auth
+#- name: Log into challenge registry
+#  community.docker.docker_login:
+#    registry_url: "{{ registry_ip }}:6000"
+#    username: "{{ challenge_registry_username }}"
+#    password: "{{ challenge_registry_password }}"
+
+- name: Pull the LiveCTF runner image
+  community.docker.docker_image:
+    name: localhost:5001/livectf-runner
+    source: pull
+    force_source: "{{ upgrade_runner | default(false) | bool }}"
+
+- name: Start LiveCTF runner container
+  community.docker.docker_container:
+    name: livectf-runner
+    image: localhost:5001/livectf-runner
+    state: started
+    env:
+      AMQP_ADDR: "amqp://{{ amqp_username }}:{{ amqp_password }}@{{ rabbitmq_ip }}//"
+      DATABASE_URL: "postgres://{{ database_username }}:{{ database_password }}@{{ database_ip }}/{{ database_db }}"
+      EXPLOIT_DOCKER_REPO: "{{ registry_ip }}:5000/"
+      CHALLENGE_DOCKER_REPO: "{{ registry_ip }}:6000/"
+      RUST_LOG: info
+      #DISK_LIMIT_AVAILABLE: "1"
+      CONTAINER_RUNNER: "docker"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

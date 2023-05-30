@@ -1,0 +1,74 @@
+- name: Install nginx
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - nginx
+      - snapd
+
+- name: Install nginx configuration
+  become: true
+  ansible.builtin.template:
+    src: livectf.conf.j2
+    dest: /etc/nginx/sites-available/livectf.conf
+    owner: root
+    group: root
+    mode: "644"
+
+- name: Install nginx proxy configs
+  become: true
+  ansible.builtin.copy:
+    src: proxy_params
+    dest: /etc/nginx/proxy_params
+    owner: root
+    group: root
+    mode: "644"
+
+- name: Install nginx auth configs
+  become: true
+  ansible.builtin.copy:
+    src: htpasswd.conf
+    dest: /etc/nginx/htpasswd.conf
+    owner: root
+    group: root
+    mode: "644"
+
+- name: Activate nginx configuration
+  become: true
+  ansible.builtin.file:
+    dest: /etc/nginx/sites-enabled/livectf.conf
+    src: /etc/nginx/sites-available/livectf.conf
+    owner: root
+    group: root
+    mode: "644"
+    state: link
+  notify: reload nginx
+
+- name: Install snap core
+  become: true
+  community.general.snap:
+    name:
+      - core
+
+- name: Install certbot
+  become: true
+  community.general.snap:
+    classic: true
+    name:
+      - certbot
+
+- name: Create certbot symlink
+  become: true
+  ansible.builtin.file:
+    src: /snap/bin/certbot
+    dest: /usr/bin/certbot
+    owner: root
+    group: root
+    mode: "755"
+    state: link
+
+- name: Setup certificates for nginx
+  become: true
+  ansible.builtin.command:
+    cmd: "certbot --nginx --non-interactive --agree-tos -m contact@livectf.com -d play.livectf.com"

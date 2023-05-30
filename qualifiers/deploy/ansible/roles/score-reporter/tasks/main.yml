@@ -1,0 +1,50 @@
+- name: Create LiveCTF app directory
+  become: true
+  ansible.builtin.file:
+    path: /opt/livectf
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Upload LiveCTF score-reporter binary
+  become: true
+  ansible.builtin.copy:
+    src: score-reporter
+    dest: /opt/livectf/score-reporter
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Upload LiveCTF score-reporter config
+  become: true
+  ansible.builtin.template:
+    src: env.j2
+    dest: /opt/livectf/.env
+    mode: '600'
+    owner: root
+    group: root
+
+- name: Upload LiveCTF score-reporter service
+  become: true
+  ansible.builtin.copy:
+    src: score-reporter.service
+    dest: /etc/systemd/system/score-reporter.service
+    mode: '644'
+    owner: root
+    group: root
+
+- name: Upload LiveCTF score-reporter timer
+  become: true
+  ansible.builtin.copy:
+    src: score-reporter.timer
+    dest: /etc/systemd/system/score-reporter.timer
+    mode: '644'
+    owner: root
+    group: root
+
+- name: Enable a timer unit for score-reporter
+  ansible.builtin.systemd:
+    name: score-reporter.timer
+    state: started
+    enabled: true

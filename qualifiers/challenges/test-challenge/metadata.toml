@@ -1,0 +1,14 @@
+challenge_id = "test-challenge"
+
+challenge_name = "Test Challenge"
+
+challenge_description = '''
+This challenge can be used to test the setup.
+It contains a simple buffer overflow and a win function.
+Additionally, if you input the string "WIN" it will directly spawn a shell for you.
+'''
+
+challenge_spoilers = '''
+There are two ways to solve the challenge. The first way is to input the string "WIN".
+The other way is to do a simple stack buffer overflow and overwrite the return address with the win function.
+'''

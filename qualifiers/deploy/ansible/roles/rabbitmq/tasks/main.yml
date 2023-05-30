@@ -1,0 +1,141 @@
+- name: Get deb architecture
+  ansible.builtin.command:
+    cmd: 'dpkg --print-architecture'
+  register: deb_architecture
+  changed_when: false
+
+- name: Get OS version
+  ansible.builtin.command:
+    cmd: 'lsb_release -cs'
+  register: os_version_codename
+  changed_when: false
+
+- name: Capture deb architecture
+  ansible.builtin.set_fact:
+    deb_architecture: "{{ deb_architecture.stdout }}"
+    os_version_codename: "{{ os_version_codename.stdout }}"
+
+- name: Install docker pre-dependencies
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - ca-certificates
+
+- name: Create keyrings directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Download RabbitMQ GPG key 1
+  become: true
+  ansible.builtin.get_url:
+    url: "https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA"
+    dest: /etc/apt/keyrings/com.rabbitmq.team.asc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Download RabbitMQ GPG key 2
+  become: true
+  ansible.builtin.get_url:
+    url: "https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key"
+    dest: /etc/apt/keyrings/io.cloudsmith.rabbitmq.E495BB49CC4BBE5B.asc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Download RabbitMQ GPG key 3
+  become: true
+  ansible.builtin.get_url:
+    url: "https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key"
+    dest: /etc/apt/keyrings/io.cloudsmith.rabbitmq.9F4587F226208342.asc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Add RabbitMQ repository to sources.list.d 1
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/io.cloudsmith.rabbitmq.E495BB49CC4BBE5B.asc] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/ubuntu {{ os_version_codename }} main"
+    update_cache: false
+    state: present
+  register: apt_source1
+
+- name: Add RabbitMQ repository to sources.list.d 2
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb-src [signed-by=/etc/apt/keyrings/io.cloudsmith.rabbitmq.E495BB49CC4BBE5B.asc] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/ubuntu {{ os_version_codename }} main"
+    update_cache: false
+    state: present
+  register: apt_source2
+
+- name: Add RabbitMQ repository to sources.list.d 3
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/io.cloudsmith.rabbitmq.9F4587F226208342.asc] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/ubuntu {{ os_version_codename }} main"
+    update_cache: false
+    state: present
+  register: apt_source3
+
+- name: Add RabbitMQ repository to sources.list.d 4
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb-src [signed-by=/etc/apt/keyrings/io.cloudsmith.rabbitmq.9F4587F226208342.asc] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/ubuntu {{ os_version_codename }} main"
+    update_cache: false
+    state: present
+  register: apt_source4
+
+- name: Update apt cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+  when: apt_source1.changed or apt_source2.changed or apt_source3.changed or apt_source4.changed
+
+- name: Install RabbitMQ dependencies
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - erlang-base
+      - erlang-asn1
+      - erlang-crypto
+      - erlang-eldap
+      - erlang-ftp
+      - erlang-inets
+      - erlang-mnesia
+      - erlang-os-mon
+      - erlang-parsetools
+      - erlang-public-key
+      - erlang-runtime-tools
+      - erlang-snmp
+      - erlang-ssl
+      - erlang-syntax-tools
+      - erlang-tftp
+      - erlang-tools
+      - erlang-xmerl
+
+- name: Install RabbitMQ server
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: fixed
+    name:
+      - rabbitmq-server
+
+- name: Create RabbitMQ user
+  community.rabbitmq.rabbitmq_user:
+    state: present
+    user: "{{ amqp_username }}"
+    password: "{{ amqp_password }}"
+    permissions:
+      - vhost: /
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*

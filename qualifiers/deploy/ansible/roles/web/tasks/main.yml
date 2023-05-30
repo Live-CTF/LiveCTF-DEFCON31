@@ -1,0 +1,48 @@
+- name: Pull the LiveCTF web image
+  community.docker.docker_image:
+    name: localhost:5001/livectf-web
+    source: pull
+    force_source: "{{ upgrade_web | default(false) | bool }}"
+
+- name: Pull the LiveCTF api image
+  community.docker.docker_image:
+    name: localhost:5001/livectf-api
+    source: pull
+    force_source: "{{ upgrade_api | default(false) | bool }}"
+
+- name: Create Docker network
+  community.docker.docker_network:
+    name: "livectf-web"
+
+- name: Start LiveCTF api container
+  community.docker.docker_container:
+    name: livectf-api
+    image: localhost:5001/livectf-api
+    state: started
+    env:
+      ADMIN_KEY: "{{ admin_api_key }}"
+      AMQP_ADDR: "amqp://{{ amqp_username }}:{{ amqp_password }}@{{ rabbitmq_ip }}//"
+      API_HOST: "{{ api_host }}"
+      API_PORT: "{{ api_port }}"
+      AUTH_KEY: "{{ auth_server_key }}"
+      AUTH_URL: "{{ auth_server_url }}"
+      DATABASE_URL: "postgres://{{ database_username }}:{{ database_password }}@{{ database_ip }}/{{ database_db }}"
+      EXPLOITS_PATH: "{{ exploits_path }}"
+      EXPLOITS_STORAGE: "{{ exploits_storage }}"
+      GOOGLE_APPLICATION_CREDENTIALS_JSON: "{{ gcp_service_account_key_challenge | string }}"
+      GOOGLE_SERVICE_ACCOUNT_KEY: "{{ gcp_service_account_key_writer | string }}"
+      HMAC_KEY: "{{ hmac_key }}"
+      REDIS_HOST: "redis://{{ redis_ip }}:6379"
+      RUST_LOG: info
+    networks:
+      - name: "livectf-web"
+
+- name: Start LiveCTF web container
+  community.docker.docker_container:
+    name: livectf-web
+    image: localhost:5001/livectf-web
+    state: started
+    ports:
+      - "127.0.0.1:8000:80"
+    networks:
+      - name: "livectf-web"

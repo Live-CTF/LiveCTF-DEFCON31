@@ -1,0 +1,11 @@
+- name: Placeholder common task
+  ansible.builtin.debug:
+    msg: "User setup etc can go here"
+
+# TODO (P2): How to manage multiple interfaces in a sane way?
+#- name: Make SSHd listen only on all interfaces
+#  become: true
+#  ansible.builtin.copy:
+#    dest: /etc/ssh/sshd_config.d/listen_all.conf
+#    content: "ListenAddress 0.0.0.0"
+#  notify: restart sshd

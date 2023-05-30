@@ -1,0 +1,2 @@
+zerotier_network_id: "[REDACTED]" # TODO (P0): Create new
+zerotier_api_key: "[REDACTED]" # TODO (P0): Move to global config and replace

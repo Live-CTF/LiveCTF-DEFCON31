@@ -1,0 +1,201 @@
+- name: Get deb architecture
+  ansible.builtin.command:
+    cmd: 'dpkg --print-architecture'
+  register: deb_architecture
+  changed_when: false
+
+- name: Get OS version
+  ansible.builtin.command:
+    cmd: 'lsb_release -cs'
+  register: os_version_codename
+  changed_when: false
+
+- name: Capture deb architecture
+  ansible.builtin.set_fact:
+    deb_architecture: "{{ deb_architecture.stdout }}"
+    os_version_codename: "{{ os_version_codename.stdout }}"
+
+- name: Install graylog pre-dependencies
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - ca-certificates
+
+- name: Create keyrings directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Download MongoDB GPG key
+  become: true
+  ansible.builtin.get_url:
+    url: "https://www.mongodb.org/static/pgp/server-6.0.asc"
+    dest: /etc/apt/keyrings/mongodb-server.asc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Download OpenSearch GPG key
+  become: true
+  ansible.builtin.get_url:
+    url: "https://artifacts.opensearch.org/publickeys/opensearch.pgp"
+    dest: /etc/apt/keyrings/opensearch.asc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Add MongoDB repository to sources.list.d
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [ arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb-server.asc ] https://repo.mongodb.org/apt/ubuntu {{ os_version_codename }}/mongodb-org/6.0 multiverse"
+    update_cache: false
+    state: present
+  register: apt_source1
+
+- name: Add OpenSearch repository to sources.list.d
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [ signed-by=/etc/apt/keyrings/opensearch.asc ] https://artifacts.opensearch.org/releases/bundle/opensearch/2.x/apt stable main"
+    update_cache: false
+    state: present
+  register: apt_source2
+
+- name: Update apt cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+  when: apt_source1.changed or apt_source2.changed
+
+- name: Disable transparent hugepages
+  become: true
+  ansible.builtin.copy:
+    src: disable-transparent-huge-pages.service
+    dest: /etc/systemd/system/disable-transparent-huge-pages.service
+    owner: root
+    group: root
+    mode: '644'
+
+- name: Install GrayLog dependencies
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    state: present
+    name:
+      - mongodb-org
+      - opensearch
+
+- name: Configure OpenSearch
+  become: true
+  ansible.builtin.copy:
+    src: opensearch.yml
+    dest: /etc/opensearch/opensearch.yml
+    owner: root
+    group: root
+    mode: '644'
+
+# TODO (P2): /etc/opensearch/jvm.options
+# TODO (P2): validate vm.max_map_count
+
+- ansible.posix.sysctl:
+    name: vm.max_map_count
+    value: '262144'
+    state: present
+
+- name: Start MongoDB
+  become: true
+  ansible.builtin.service:
+    name: mongod
+    enabled: true
+    state: started
+
+- name: Start OpenSearch
+  become: true
+  ansible.builtin.service:
+    name: opensearch
+    enabled: true
+    state: started
+
+- name: Download GrayLog package
+  become: true
+  ansible.builtin.get_url:
+    url: https://packages.graylog2.org/repo/packages/graylog-5.0-repository_latest.deb
+    dest: /var/cache/apt/archives/graylog-5.0-repository_latest.deb
+    owner: root
+    group: root
+    mode: '644'
+
+- name: Install GrayLog deb file
+  become: true
+  ansible.builtin.apt:
+    deb: /var/cache/apt/archives/graylog-5.0-repository_latest.deb
+  register: install_graylog
+
+- name: Update apt cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+  when: install_graylog.changed
+
+- name: Install GrayLog server
+  become: true
+  ansible.builtin.apt:
+    update_cache: false
+    state: present
+    name:
+      - graylog-server 
+
+- name: Set GrayLog secret
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/graylog/server/server.conf
+    regexp: '^password_secret ='
+    line: "password_secret = {{ graylog_secret }}"
+  notify: restart graylog
+
+- name: Set GrayLog root password
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/graylog/server/server.conf
+    regexp: '^root_password_sha2 ='
+    line: "root_password_sha2 = {{ graylog_root_password | hash('sha256') }}"
+  notify: restart graylog
+
+- name: Set GrayLog root password
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/graylog/server/server.conf
+    regexp: '^elasticsearch_hosts ='
+    line: "elasticsearch_hosts = http://127.0.1.1:9200"
+  notify: restart graylog
+
+- name: Create graylog-server.service.d directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/graylog-server.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '755'
+
+- name: Copy graylog-server.service drop-in
+  ansible.builtin.copy:
+    src: graylog-server.service
+    dest: /etc/systemd/system/graylog-server.service.d/override.conf
+    owner: root
+    group: root
+    mode: '644'
+  notify:
+    - daemon-reload
+    - restart graylog
+
+- name: Start GrayLog
+  become: true
+  ansible.builtin.service:
+    name: graylog-server
+    enabled: true
+    state: started

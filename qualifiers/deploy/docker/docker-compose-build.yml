@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/web.Dockerfile
+    image: localhost:5001/livectf-web
+  
+  livectf-api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/challenge-api.Dockerfile
+    image: localhost:5001/livectf-api
+    
+  livectf-builder:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/exploit-builder.Dockerfile
+    image: localhost:5001/livectf-builder
+  
+  livectf-runner:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/exploit-runner.Dockerfile
+    image: localhost:5001/livectf-runner

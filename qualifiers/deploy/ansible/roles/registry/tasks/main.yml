@@ -1,0 +1,47 @@
+- name: Pull the Docker registry image
+  community.docker.docker_image:
+    name: "registry:2"
+    source: pull
+
+- name: Start exploit Docker registry
+  community.docker.docker_container:
+    name: exploit_registry
+    image: "registry:2"
+    state: started
+    ports:
+      - "{{ private_ip }}:5000:5000"
+      - "127.0.0.1:5000:5000"
+
+- name: Create LiveCTF auth settings directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/livectf
+    state: directory
+    mode: '755'
+    owner: root
+    group: root
+
+- name: Upload LiveCTF registry auth settings
+  become: true
+  ansible.builtin.copy:
+    src: htpasswd.conf
+    dest: /etc/livectf/htpasswd.conf
+    mode: '644'
+    owner: root
+    group: root
+
+- name: Start challenge Docker registry
+  community.docker.docker_container:
+    name: challenge_registry
+    image: "registry:2"
+    state: started
+    ports:
+      - "{{ private_ip }}:6000:5000"
+      - "127.0.0.1:6000:5000"
+# TODO (P2): Setup TLS in the future to use auth
+#    env:
+#      REGISTRY_AUTH: "htpasswd"
+#      REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
+#      REGISTRY_AUTH_HTPASSWD_PATH: "/etc/livectf/htpasswd.conf" 
+#    volumes:
+#      - /etc/livectf:/etc/livectf

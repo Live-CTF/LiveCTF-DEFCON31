@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer to run backup-db.service
+
+[Timer]
+Unit=backup-db.service
+OnCalendar=*:0/5
+
+[Install]
+WantedBy=timers.target

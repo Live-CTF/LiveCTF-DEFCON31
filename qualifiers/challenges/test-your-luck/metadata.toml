@@ -1,0 +1,10 @@
+challenge_id = "test-your-luck"
+
+challenge_name = "Test Your Luck"
+
+challenge_description = '''
+Can you beat the hottest new skill-based game sweeping the nation?
+'''
+
+challenge_spoilers = '''
+'''

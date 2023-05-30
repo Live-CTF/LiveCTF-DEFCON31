@@ -1,0 +1,108 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/web.Dockerfile
+    ports:
+      - 127.0.0.1:8080:80
+    depends_on:
+      - livectf-api
+
+  livectf-api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/challenge-api.Dockerfile
+    ports:
+      - "127.0.0.1:9000:${API_PORT}"
+    environment:
+      - AMQP_ADDR
+      - API_HOST
+      - API_PORT
+      - DATABASE_URL
+      - EXPLOITS_PATH
+      - EXPLOITS_STORAGE
+      - HMAC_KEY
+      - REDIS_HOST
+      - GOOGLE_SERVICE_ACCOUNT_KEY
+      - AUTH_URL
+      - AUTH_KEY
+      - RUST_LOG
+    depends_on:
+      - database
+      - messagequeue
+    volumes:
+      - exploits:/data/exploits
+    restart: on-failure
+
+  livectf-builder:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/exploit-builder.Dockerfile
+    environment:
+      - AMQP_ADDR
+      - BUILD_PATH
+      - DATABASE_URL
+      - "DOCKER_REPO=${DOCKER_REPO_EXT}"
+      - EXPLOITS_PATH
+      - EXPLOITS_STORAGE
+      - GOOGLE_SERVICE_ACCOUNT_KEY
+      - CONTAINER_RUNNER
+    depends_on:
+      - database
+      - messagequeue
+    volumes:
+    - exploits:/data/exploits
+    - livectf_credentials:/credentials
+    - /var/run/docker.sock:/var/run/docker.sock
+    restart: on-failure
+
+  livectf-runner:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/exploit-runner.Dockerfile
+    environment:
+      - AMQP_ADDR
+      - DATABASE_URL
+      - DOCKER_REPO
+      - CONTAINER_RUNNER
+    depends_on:
+      - database
+      - messagequeue
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: on-failure
+
+  nautlius-auth:
+    build:
+      context: ../../infrastructure/auth-mock-server
+
+  messagequeue:
+    image: "rabbitmq:latest"
+    ports:
+      - 127.0.0.1:9001:5672
+
+  dockerregistry:
+    image: "registry:latest"
+    ports:
+      - 127.0.0.1:5000:5000
+      - 172.17.0.1:5000:5000
+
+  database:
+    image: "postgres:latest"
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+    ports:
+      - 127.0.0.1:9002:5432
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - 127.0.0.1:9003:6379
+
+volumes:
+  exploits:
+  livectf_credentials:
+    external: true
