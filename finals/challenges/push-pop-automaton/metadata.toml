@@ -1,0 +1,23 @@
+challenge_id = "push-pop-automaton"
+
+challenge_name = "Push/Pop Automaton"
+
+challenge_description = '''
+Straight out of my Fundamentals of Computer Science class, I give to you:
+The first Push/Pop automaton that is actually turing-complete.
+How? Von-Neumann Architectures, of course!
+'''
+
+challenge_spoilers = '''
+VM with 3 opcodes: push/pop/halt
+Stack starts at the end of memory and you can pop directly into the vm state structure.
+Then you can read the lose function pointer (via pop) and overwrite with the win pointer (via push).
+Then just halt to win.
+'''
+
+author = "glenns"
+
+hints = [
+    "Keep popping to go beyond the bounds of the VM",
+    "Pop a lot and then push back new stack contents to smash the return address"
+]

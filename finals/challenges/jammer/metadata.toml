@@ -1,0 +1,24 @@
+challenge_id = "jammer"
+
+challenge_name = "Jammer"
+
+challenge_description = '''
+No SQL here, but still reminiscent of days gone by.
+'''
+
+challenge_spoilers = '''
+This is a modified version of the CGC rematch problems (REMATCH_3: Address
+Resolution Service), which was itself a recreation of the bug that the SQL
+Slammer worm used (CVE-2002-0649).
+
+CGC binary repo link: https://github.com/trailofbits/cb-multios/tree/master/challenges/REMATCH_3--Address_Resolution_Service--SQL_Slammer
+
+The bug itself is a simple stack overflow (strcpy).
+'''
+
+author = "seeinglogic"
+
+hints = [
+    "This is a classic old-school bug",
+    "queryOne uses strcpy"
+]

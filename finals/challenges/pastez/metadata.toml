@@ -1,0 +1,25 @@
+challenge_id = "pastez"
+
+challenge_name = "Pastez"
+
+challenge_description = '''
+I found this secret pastebin server! It's pretty cool!
+Most of my messages get mangled though :(
+Can you "fix" that?
+'''
+
+challenge_spoilers = '''
+This "pastebin" server censors specific words ("hack", "hacking") by slicing the input message word by word and blindly `strcpy`ing `[deleted]` if one of the bad words is hit.
+This causes a pretty trivial stack overflow in the `sanitize` function, as stack cookies/canaries/protectors are disabled.
+Since the overflow can be thought of as the end of a message "sliding" past the end of the stack buffer when the short word "hack" is replaced with the longer "[deleted]", there's a limit to the size of the overflow.
+Because of this, a second bug in message processing (lack of a NULL terminator when messages are the full 256 bytes) must be used to leak a heap address (the address of a message), which can then be pivoted into by a `leave; ret;` gadget.
+From there, it's a pretty straight forward chain of leaking a libc pointer via a GOT entry, and reading in a ROP continuation with a now known execv address.
+'''
+
+author = "kallsyms (ghost)"
+
+hints = [
+    "NULL termination?",
+    "Man, length calculations are hard...",
+    "See anything 'useful'?",
+]

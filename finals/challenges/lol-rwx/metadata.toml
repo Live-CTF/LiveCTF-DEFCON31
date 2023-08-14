@@ -1,0 +1,19 @@
+challenge_id = "lol-rwx"
+
+challenge_name = "LOL RWX"
+
+challenge_description = '''
+SUDDEN DEATH: .text is RWX! Write me a solution!
+'''
+
+challenge_spoilers = '''
+Since .text is RWX you can just write shellcode into main directly.
+I chose to write it at the start of _main and then write a jump there, since I'm paranoid about overlap.
+'''
+
+author = "glenns"
+
+hints = [
+    "Bro just write your shellcode to the end of main",
+    "If this shows up I will be disappointed in you."
+]

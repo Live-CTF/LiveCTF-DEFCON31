@@ -1,0 +1,18 @@
+challenge_id = "shop"
+
+challenge_name = "Shop"
+
+challenge_description = '''
+Let's go shopping!
+'''
+
+challenge_spoilers = '''
+Heap uaf
+'''
+
+author = "negasora"
+
+hints = [
+    "You can open multiple accounts with the store",
+    "The store keeps using items that should be given away for free!"
+]

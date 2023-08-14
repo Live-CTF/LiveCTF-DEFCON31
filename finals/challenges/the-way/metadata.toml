@@ -1,0 +1,23 @@
+challenge_id = "the-way"
+
+challenge_name = "The Way"
+
+challenge_description = '''
+I am lost. I think I need to take a moment to remember where I was going.
+Don't distrurb me. I will remember any moment.
+'''
+
+challenge_spoilers = '''
+The challenge is a traditional optimizeme challenge.
+The binary will try to calculate a table of the shortest path between each node in a graph and then use that table to derive a key and decrypt the flag.
+The implementation is using a naive recursive algorithm with no optimization and will never finish before running out of time or memory.
+The players need to identify what calculation is being performed and optimize it, for example using the Floyd-Warshal alghorithm.
+They can then use the same key derivation procedure to calculate the key and decrypt the flag.
+'''
+
+author = "zetatwo"
+
+hints = [
+    "The recursive calls perform a lot of repeated work",
+    "The program runs the recursion from the Floyd-Warshal algorithm but lacks memoization or dynamic programming."
+]

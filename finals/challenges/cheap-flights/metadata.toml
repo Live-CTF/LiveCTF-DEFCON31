@@ -1,0 +1,28 @@
+challenge_id = "cheap-flights"
+
+challenge_name = "Cheap Flights"
+
+challenge_description = '''
+Sometimes budgets matter and you just need a bargain...
+'''
+
+challenge_spoilers = '''
+This is a rather contrived example of a bug where the constraint isn't the
+size of the shellcode, it is the sum of the shellcode bytes.
+
+This could look like it's exploitable in other ways, but there's a number of
+hints in the binary to just try to write shellcode that meets the constraint
+of having a total sum of under 2000.
+
+Shellcode usually isn't optimized for sum, but shorter shellcode will generally
+have a smaller sum, so if the competitors have small shellcode at the ready it
+should only take some small tweaking to get under the limit, or there are some
+alternate strategies like staged shellcode.
+'''
+
+author = "seeinglogic"
+
+hints = [
+    "You should get your shellcode where the mprotect is happening",
+    "Starting with small shellcode and optimizing instructions with a high byte sum is a reasonable strategy"
+]

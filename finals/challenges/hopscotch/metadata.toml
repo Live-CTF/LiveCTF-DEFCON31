@@ -1,0 +1,20 @@
+challenge_id = "hopscotch"
+
+challenge_name = "Hopscotch"
+
+challenge_description = '''
+TODO: create a description here for
+the challenge that is really cool
+and interesting
+'''
+
+challenge_spoilers = '''
+4 bytes of shellcode, 4 \x40s, rinse and repeat
+'''
+
+author = "kat"
+
+hints = [
+    "TODO: This is hint one",
+    "TODO: This is the second hint"
+]

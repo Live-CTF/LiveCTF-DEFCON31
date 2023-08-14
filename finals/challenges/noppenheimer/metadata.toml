@@ -1,0 +1,20 @@
+challenge_id = "noppenheimer"
+
+challenge_name = "Noppenheimer"
+
+challenge_description = '''
+You've been given the controls for one of the most ambitious scientific tests in history!
+You could learn so much about the very fabric that holds this world, no, this reality together.
+Or you could pop a shell that'd be cool too I guess.
+'''
+
+challenge_spoilers = '''
+nop out irrelevant bytes and use the syscall at 3111
+'''
+
+author = "negasora (naming creds to ZetaTwo)"
+
+hints = [
+    "You will need to launch a lot of tests. Waiting for the results is slow and not strictly necessary.",
+    "There's a syscall at offset 3111. Set up the registers for a read into the arena for stage 2."
+]

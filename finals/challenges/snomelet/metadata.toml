@@ -1,0 +1,36 @@
+challenge_id = "snomelet"
+
+challenge_name = "Snomelet"
+
+challenge_description = '''
+You know what people love? AI.
+People totally want to hear more about AI.
+
+Not about how it's taking over the world and making social media into a constant
+death-spiral of overblown crap and impending doom.
+
+No, we need positive AI stories.
+Like how we used AI to teach these snakes to code.
+
+That's why we're sharing their heart-warming story and crappy calculator app
+with the world. Not because it makes us millions of dollars. That's totally not
+why.
+'''
+
+challenge_spoilers = '''
+This is a riff on a Python jail where the competitors have the ability to
+compile and run a single Python expression, as long as it passes the checks.
+
+However, in this cass the checks are done at the bytecode level, which is pretty
+tricky to get around. But there's a hidden ability to hotpatch the bytecode.
+This opens the floodgate, but there are other parts of the compile code object
+(constants and symbol names) that are not changed during the hotpatching, so
+they need to make sure it all matches up.
+'''
+
+author = "seeinglogic"
+
+hints = [
+    "This isn't a jail problem, it's a patching problem",
+    "ai_log_code replaces bytecode. Make sure the code object has references at the right indices"
+]

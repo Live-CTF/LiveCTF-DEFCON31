@@ -1,0 +1,19 @@
+challenge_id = "have-you-tried-ti-gnisrever"
+
+challenge_name = "Have you tried ?ti gnisrever"
+
+challenge_description = '''
+SUDDEN DEATH: Have you tried? Maybe you should!
+'''
+
+challenge_spoilers = '''
+Have you tried REVERSING IT? Except in reverse, get it?
+Then it just runs your shellcode which hopefully you have saved by this point.
+'''
+
+author = "glenns"
+
+hints = [
+    "Shellcode in reverse, and the code to get there also in double reverse because of course",
+    "If this shows up I will be disappointed in you."
+]

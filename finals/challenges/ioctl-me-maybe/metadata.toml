@@ -1,0 +1,34 @@
+challenge_id = "ioctl-me-maybe"
+
+challenge_name = "IOCTL Me Maybe"
+
+challenge_description = '''
+Ok, but can you get a shell with arbitrary ioctls?? Surely one of them will
+be able to write arbitrary memory...
+'''
+
+challenge_spoilers = '''
+Oh god how many of these are we going to do? This time you get IOCTL! Everyone's
+favorite syscall that is hard to pronounce. What does it even do? A lot, in fact.
+Ok, but how do you solve this?
+
+The PTY lets you use the TTY ioctls, and my solution uses exclusively TCGETS and TCSETS.
+* TCGETS - Get the terminal properties in a termios structure
+* TCSETS - Set terminal properties from a termios structure
+
+With these two ioctls we can write 36 (pls) bytes of mostly unconstrained memory
+(there are some weird bits set in the middle that I did not look up while solving).
+We don't actually get to read out the memory, so it's basically just arb write -> exec.
+
+Luckily, there are a bunch of (convenient) leaks for stack and code addresses, and
+a bunch of (also convenient) rop gadgets in the binary.
+
+So I just wrote an ez ropchain onto the stack and got exec.
+'''
+
+author = "glenns"
+
+hints = [
+    "Which IOCTLs allow you to read and write memory?",
+    "Use TCGETS / TCSETS on the PTY and write+read to smash stack memory"
+]

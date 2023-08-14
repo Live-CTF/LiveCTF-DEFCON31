@@ -1,0 +1,19 @@
+challenge_id = "literally-just-gets"
+
+challenge_name = "It's Just Gets()"
+
+challenge_description = '''
+SUDDEN DEATH: It's just gets. Do you have a sample solution handy?
+'''
+
+challenge_spoilers = '''
+It's just gets! Smash that stack and get rip. Stack is exec too for extra fun.
+It's jmp rsp time.
+'''
+
+author = "glenns"
+
+hints = [
+    "TODO: This is hint one",
+    "TODO: This is the second hint"
+]

@@ -1,0 +1,28 @@
+challenge_id = "uleb4096"
+
+challenge_name = "ULEB4096"
+
+challenge_description = '''
+I spent too long reversing macOS binaries (this is an ELF, don't worry!)
+and I grew awfully fond of this wacky number encoding scheme.
+
+Then I decided to use it to store shellcode and I guess here we are now.
+'''
+
+challenge_spoilers = '''
+Shellcoding except your shellcode has to be valid ULEB128! Essentially,
+that just means you need the high bit set on every byte (except the last one).
+Generally speaking this should be pretty easy, only issue is you cannot use any
+REX instructions, so all memory accesses have to be 32/16/8 bit. Some clever use of
+XOR should make this pretty easy to handle though.
+
+My reference solution just uses the limited set of opcodes to write a second stage
+payload that runs bash and NOP sleds into it.
+'''
+
+author = "glenns"
+
+hints = [
+    "ULEB128 breaks up the input like base64 but with 7 bits per output byte. It sets the high bit on all bytes in the encoded result.",
+    "Use 16 and 8 bit rw ops to get a real write primitive and write a second stage payload with real shellcode."
+]

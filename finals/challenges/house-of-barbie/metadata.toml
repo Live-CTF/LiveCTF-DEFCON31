@@ -1,0 +1,18 @@
+challenge_id = "house_of_barbie"
+
+challenge_name = "House of Barbie"
+
+challenge_description = '''
+That boring standard memory management wasn't PINK Kenough for Barbie's Dreamhouse, so we implemented our own!
+'''
+
+challenge_spoilers = '''
+Custom memory management with bug in reallocation.
+'''
+
+author = "negasora"
+
+hints = [
+    "Do all chunks have the correct size?",
+    "Splitting chunks is hard :("
+]

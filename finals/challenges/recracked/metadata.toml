@@ -1,0 +1,31 @@
+challenge_id = "recracked"
+
+challenge_name = "Recracked"
+
+challenge_description = '''
+A blast from the past returns.
+'''
+
+challenge_spoilers = '''
+
+This is a modified version of the crackaddr bug (CVE-2002-1337), based on Halvar
+Flake's minimized version.
+https://gist.github.com/withzombies/96fa5e69b668fc9fa3c4bd6db5ef93fc
+
+This bug was also featured in a "rematch" challenge for CGC
+https://github.com/trailofbits/cb-multios/tree/master/challenges/REMATCH_2--Mail_Server--Crackaddr
+
+It was interesting for the CGC because at the time this bug was considered
+challenging for symbolic execution to solve and was the impetus for several
+research techniques (http://2015.hackitoergosum.org/slides/HES2015-10-29%20Cracking%20Sendmail%20crackaddr.pdf)
+
+It is easy for fuzzers to discover and was originally found via manual analysis,
+but this bug has a lot of history: https://mechanicalnull.github.io/grand-crackaddr-rematch-redux/
+'''
+
+author = "seeinglogic"
+
+hints = [
+    "What stops the copy?",
+    "What happens when matched parens are detected?"
+]

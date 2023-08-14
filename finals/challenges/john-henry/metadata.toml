@@ -1,0 +1,16 @@
+challenge_id = "john-henry"
+
+challenge_name = "john-henry"
+
+challenge_description = '''
+Hammer's going to be the death of me. Or is it?
+'''
+
+challenge_spoilers = '''
+
+'''
+
+hints = [
+    "Debugger makes it easy to figure out the order of the functions",
+    "z3.UDiv gives you the correct result for the divisions"
+]
