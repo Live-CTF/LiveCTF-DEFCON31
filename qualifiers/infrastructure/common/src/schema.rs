@@ -50,8 +50,4 @@ diesel::table! {
 diesel::joinable!(exploit_outputs -> exploits (exploit_id));
 diesel::joinable!(exploits -> challenges (challenge_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    challenges,
-    exploit_outputs,
-    exploits,
-);
+diesel::allow_tables_to_appear_in_same_query!(challenges, exploit_outputs, exploits,);

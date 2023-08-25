@@ -88,18 +88,31 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .await
                 .expect("Failed to get challenge scores");
 
-        log::debug!("Got {} solves for challenge {}", challenge_scores.solves.len(), challenge.challenge_id());
+        log::debug!(
+            "Got {} solves for challenge {}",
+            challenge_scores.solves.len(),
+            challenge.challenge_id()
+        );
         for solve in challenge_scores.solves.iter() {
             let solve_score = match solve.score_awarded {
                 Some(score) => score,
                 None => {
-                    log::debug!("No points awarded for solve {} for team {} on challenge {}", solve.team_id, solve.team_id, challenge.challenge_id());
+                    log::debug!(
+                        "No points awarded for solve {} for team {} on challenge {}",
+                        solve.team_id,
+                        solve.team_id,
+                        challenge.challenge_id()
+                    );
                     continue;
                 }
             };
 
             if scoring_teams.contains(&solve.team_id) {
-                log::debug!("Already processed team {} for challenge {}", solve.team_id, challenge.challenge_id());
+                log::debug!(
+                    "Already processed team {} for challenge {}",
+                    solve.team_id,
+                    challenge.challenge_id()
+                );
                 continue;
             }
             scoring_teams.insert(&solve.team_id);
@@ -132,9 +145,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 continue;
             }
 
-            let score = if is_test_challenge { 1 } else if is_special_challenge1 { 50 } else { solve_score };
+            let score = if is_test_challenge {
+                1
+            } else if is_special_challenge1 {
+                50
+            } else {
+                solve_score
+            };
 
-            log::info!("Going to submit {score} points to team {} for explioit {solve_exploit_id}", solve.team_id);
+            log::info!(
+                "Going to submit {score} points to team {} for explioit {solve_exploit_id}",
+                solve.team_id
+            );
 
             let http_client = reqwest::Client::new();
             let report_response = http_client

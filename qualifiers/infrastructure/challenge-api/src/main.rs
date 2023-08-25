@@ -294,11 +294,10 @@ async fn rerun_exploit(
                 .await?;
 
             Ok(HttpResponse::Ok().json(exploit))
-        },
+        }
         None => Err(ApiError::ExploitNotFound { exploit_id }),
     }
 }
-
 
 async fn connect_celery() -> Result<Arc<Celery>, CeleryError> {
     celery::app!(

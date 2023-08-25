@@ -64,7 +64,9 @@ pub fn get_released_challenges(
     Ok(released_challenges)
 }
 
-pub fn admin_get_exploits(conn: &mut PgConnection) -> Result<Vec<common::models::Exploit>, DbError> {
+pub fn admin_get_exploits(
+    conn: &mut PgConnection,
+) -> Result<Vec<common::models::Exploit>, DbError> {
     use common::schema::exploits::dsl::*;
 
     let all_exploits = exploits.load::<common::models::Exploit>(conn)?;
