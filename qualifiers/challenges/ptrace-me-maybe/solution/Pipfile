@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pwntools = "==4.2.1"
+pwntools = "==4.10.0"
 
 [dev-packages]
 

@@ -1,1 +1,1 @@
-pwntools==4.2.1
+pwntools==4.10.0
