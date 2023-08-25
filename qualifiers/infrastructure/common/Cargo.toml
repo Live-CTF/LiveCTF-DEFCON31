@@ -9,10 +9,10 @@ edition = "2021"
 chrono = { version = "0.4", features = ["serde"] }
 diesel = { version = "2", features = ["postgres", "uuid", "r2d2", "chrono"] }
 diesel_migrations = "2.0.0"
-diesel-derive-enum = { version = "2.0.0-rc.0", features = ["postgres"] }
-diesel-derive-newtype = "2.0.0-rc.0"
+diesel-derive-enum = { version = "2.1.0", features = ["postgres"] }
+diesel-derive-newtype = "2.1.0"
 log = "0.4.17"
-object_store = { version = "0.5.6", features = ["aws", "azure", "gcp"] }
+object_store = { version = "0.7.0", features = ["aws", "azure", "gcp"] }
 r2d2 = "0.8.10"
 serde = "1.0.152"
 uuid = { version = "1", features = ["v4", "serde"] }

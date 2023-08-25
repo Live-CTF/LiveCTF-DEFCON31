@@ -1,7 +1,7 @@
 // @generated automatically by Diesel CLI.
 
 pub mod sql_types {
-    #[derive(diesel::sql_types::SqlType)]
+    #[derive(diesel::query_builder::QueryId, diesel::sql_types::SqlType)]
     #[diesel(postgres_type(name = "exploit_status"))]
     pub struct ExploitStatus;
 }
@@ -9,7 +9,9 @@ pub mod sql_types {
 diesel::table! {
     challenges (challenge_id) {
         challenge_id -> Int4,
+        #[max_length = 256]
         challenge_short_name -> Varchar,
+        #[max_length = 256]
         challenge_name -> Varchar,
         uses_nsjail -> Bool,
         releases_at -> Timestamp,
@@ -48,4 +50,8 @@ diesel::table! {
 diesel::joinable!(exploit_outputs -> exploits (exploit_id));
 diesel::joinable!(exploits -> challenges (challenge_id));
 
-diesel::allow_tables_to_appear_in_same_query!(challenges, exploit_outputs, exploits,);
+diesel::allow_tables_to_appear_in_same_query!(
+    challenges,
+    exploit_outputs,
+    exploits,
+);
