@@ -23,7 +23,7 @@ It is easy for fuzzers to discover and was originally found via manual analysis,
 but this bug has a lot of history: https://mechanicalnull.github.io/grand-crackaddr-rematch-redux/
 '''
 
-author = "seeinglogic"
+challenge_authors = ["seeinglogic"]
 
 hints = [
     "What stops the copy?",

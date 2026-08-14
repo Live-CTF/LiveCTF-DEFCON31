@@ -13,3 +13,5 @@ Two parts to the challenge. First, a basic maze solver (though this can be done
 with very simply follow the wall logic), and second, you need to predict,
 verify, and track the random seed to ensure you exit alive.
 ''
+
+challenge_authors = ["psifertex"]

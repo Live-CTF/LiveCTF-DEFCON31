@@ -11,7 +11,7 @@ Since .text is RWX you can just write shellcode into main directly.
 I chose to write it at the start of _main and then write a jump there, since I'm paranoid about overlap.
 '''
 
-author = "glenns"
+challenge_authors = ["glenns"]
 
 hints = [
     "Bro just write your shellcode to the end of main",

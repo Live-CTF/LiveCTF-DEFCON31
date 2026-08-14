@@ -11,7 +11,7 @@ It's just gets! Smash that stack and get rip. Stack is exec too for extra fun.
 It's jmp rsp time.
 '''
 
-author = "glenns"
+challenge_authors = ["glenns"]
 
 hints = [
     "TODO: This is hint one",

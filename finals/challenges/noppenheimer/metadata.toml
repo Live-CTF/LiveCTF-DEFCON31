@@ -12,7 +12,8 @@ challenge_spoilers = '''
 nop out irrelevant bytes and use the syscall at 3111
 '''
 
-author = "negasora (naming creds to ZetaTwo)"
+# Naming credit: zetatwo
+challenge_authors = ["negasora"]
 
 hints = [
     "You will need to launch a lot of tests. Waiting for the results is slow and not strictly necessary.",

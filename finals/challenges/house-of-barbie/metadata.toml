@@ -10,7 +10,7 @@ challenge_spoilers = '''
 Custom memory management with bug in reallocation.
 '''
 
-author = "negasora"
+challenge_authors = ["negasora"]
 
 hints = [
     "Do all chunks have the correct size?",

@@ -20,7 +20,7 @@ should only take some small tweaking to get under the limit, or there are some
 alternate strategies like staged shellcode.
 '''
 
-author = "seeinglogic"
+challenge_authors = ["seeinglogic"]
 
 hints = [
     "You should get your shellcode where the mprotect is happening",

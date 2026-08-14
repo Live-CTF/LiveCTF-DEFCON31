@@ -11,7 +11,7 @@ Have you tried REVERSING IT? Except in reverse, get it?
 Then it just runs your shellcode which hopefully you have saved by this point.
 '''
 
-author = "glenns"
+challenge_authors = ["glenns"]
 
 hints = [
     "Shellcode in reverse, and the code to get there also in double reverse because of course",

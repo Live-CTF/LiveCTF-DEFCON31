@@ -12,7 +12,7 @@ challenge_spoilers = '''
 4 bytes of shellcode, 4 \x40s, rinse and repeat
 '''
 
-author = "kat"
+challenge_authors = ["kat"]
 
 hints = [
     "TODO: This is hint one",

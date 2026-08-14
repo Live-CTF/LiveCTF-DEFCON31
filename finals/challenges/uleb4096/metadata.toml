@@ -20,7 +20,7 @@ My reference solution just uses the limited set of opcodes to write a second sta
 payload that runs bash and NOP sleds into it.
 '''
 
-author = "glenns"
+challenge_authors = ["glenns"]
 
 hints = [
     "ULEB128 breaks up the input like base64 but with 7 bits per output byte. It sets the high bit on all bytes in the encoded result.",

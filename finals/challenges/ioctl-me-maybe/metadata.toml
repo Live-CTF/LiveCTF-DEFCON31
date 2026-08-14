@@ -26,7 +26,7 @@ a bunch of (also convenient) rop gadgets in the binary.
 So I just wrote an ez ropchain onto the stack and got exec.
 '''
 
-author = "glenns"
+challenge_authors = ["glenns"]
 
 hints = [
     "Which IOCTLs allow you to read and write memory?",

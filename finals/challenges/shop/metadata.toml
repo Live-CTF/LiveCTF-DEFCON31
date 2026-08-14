@@ -10,7 +10,7 @@ challenge_spoilers = '''
 Heap uaf
 '''
 
-author = "negasora"
+challenge_authors = ["negasora"]
 
 hints = [
     "You can open multiple accounts with the store",

@@ -18,3 +18,5 @@ This can be automated with your favourite binary instrumentation framework or gd
 A cheese solution is to use instruction counting to solve the challenge.
 After solving 20 samples, the player will get the flag.
 '''
+
+challenge_authors = ["zetatwo"]

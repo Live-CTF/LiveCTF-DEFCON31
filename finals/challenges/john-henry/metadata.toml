@@ -10,6 +10,8 @@ challenge_spoilers = '''
 
 '''
 
+challenge_authors = ["psifertex"]
+
 hints = [
     "Debugger makes it easy to figure out the order of the functions",
     "z3.UDiv gives you the correct result for the divisions"

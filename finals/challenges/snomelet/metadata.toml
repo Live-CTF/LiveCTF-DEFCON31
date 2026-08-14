@@ -28,7 +28,7 @@ This opens the floodgate, but there are other parts of the compile code object
 they need to make sure it all matches up.
 '''
 
-author = "seeinglogic"
+challenge_authors = ["seeinglogic"]
 
 hints = [
     "This isn't a jail problem, it's a patching problem",

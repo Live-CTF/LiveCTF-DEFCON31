@@ -15,7 +15,7 @@ Then you can read the lose function pointer (via pop) and overwrite with the win
 Then just halt to win.
 '''
 
-author = "glenns"
+challenge_authors = ["glenns"]
 
 hints = [
     "Keep popping to go beyond the bounds of the VM",

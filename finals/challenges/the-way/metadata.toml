@@ -15,7 +15,7 @@ The players need to identify what calculation is being performed and optimize it
 They can then use the same key derivation procedure to calculate the key and decrypt the flag.
 '''
 
-author = "zetatwo"
+challenge_authors = ["zetatwo"]
 
 hints = [
     "The recursive calls perform a lot of repeated work",

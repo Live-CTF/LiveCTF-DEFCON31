@@ -16,7 +16,7 @@ Because of this, a second bug in message processing (lack of a NULL terminator w
 From there, it's a pretty straight forward chain of leaking a libc pointer via a GOT entry, and reading in a ROP continuation with a now known execv address.
 '''
 
-author = "kallsyms (ghost)"
+challenge_authors = ["ghost"]
 
 hints = [
     "NULL termination?",

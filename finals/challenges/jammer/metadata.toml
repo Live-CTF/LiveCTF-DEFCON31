@@ -16,7 +16,7 @@ CGC binary repo link: https://github.com/trailofbits/cb-multios/tree/master/chal
 The bug itself is a simple stack overflow (strcpy).
 '''
 
-author = "seeinglogic"
+challenge_authors = ["seeinglogic"]
 
 hints = [
     "This is a classic old-school bug",

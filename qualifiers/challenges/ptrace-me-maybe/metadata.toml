@@ -29,3 +29,5 @@ in the parent process and write a payload there instead. A general strategy for 
    clobbering parent's stack with r15, r14, etc from the child
 5. Continue the parent, which will execute the ROP payload after exiting main
 '''
+
+challenge_authors = ["glenns"]
